@@ -1,6 +1,9 @@
 require 'rails_helper'
+require_relative 'shared/shared_headers'
 
 RSpec.describe 'Items API', type: :request do
+  include_context 'shared headers'
+
   # Initialize the test data
   let!(:todo) { create(:todo) }
   let!(:items) { create_list(:item, 20, todo_id: todo.id) }
@@ -9,7 +12,7 @@ RSpec.describe 'Items API', type: :request do
 
   # Test suite for GET /todos/:todo_id/items
   describe 'GET /todos/:todo_id/items' do
-    before { get todo_items_url(todo_id) }
+    before { get todo_items_url(todo_id), headers: headers }
 
     context 'when todo exists' do
       it 'returns status code 200' do
@@ -36,7 +39,7 @@ RSpec.describe 'Items API', type: :request do
 
   # Test suite for GET /todos/:todo_id/items/:id
   describe 'GET /todos/:todo_id/items/:id' do
-    before { get todo_item_url(todo_id, id) }
+    before { get todo_item_url(todo_id, id), headers: headers }
 
     context 'when todo item exists' do
       it 'returns status code 200' do
@@ -66,7 +69,7 @@ RSpec.describe 'Items API', type: :request do
     let(:valid_attributes) { { name: 'Visit Narnia', done: false } }
 
     context 'when request attributes are valid' do
-      before { post todo_items_url(todo_id), params: valid_attributes }
+      before { post todo_items_url(todo_id), params: valid_attributes, headers: headers }
 
       it 'returns status code 201' do
         expect(response).to have_http_status(201)
@@ -74,7 +77,7 @@ RSpec.describe 'Items API', type: :request do
     end
 
     context 'when an invalid request' do
-      before { post todo_items_url(todo_id), params: {} }
+      before { post todo_items_url(todo_id), params: {}, headers: headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -90,7 +93,7 @@ RSpec.describe 'Items API', type: :request do
   describe 'PUT /todos/:todo_id/items/:id' do
     let(:valid_attributes) { { name: 'Mozart' } }
 
-    before { put todo_item_url(todo_id, id), params: valid_attributes }
+    before { put todo_item_url(todo_id, id), params: valid_attributes, headers: headers }
 
     context 'when item exists' do
       it 'returns status code 204' do
@@ -118,7 +121,7 @@ RSpec.describe 'Items API', type: :request do
 
   # Test suite for DELETE /todos/:id
   describe 'DELETE /todos/:id' do
-    before { delete todo_item_url(todo_id, id) }
+    before { delete todo_item_url(todo_id, id), headers: headers }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)
